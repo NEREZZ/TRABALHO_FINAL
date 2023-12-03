@@ -3,6 +3,8 @@
 #include <windows.h>
 #include <locale.h>
 #include <time.h>
+#define M 100
+#define QNT 100
 // preco,ano,marca,modelo,condicao,combustivel,odometro,status,cambio,tamanho,tipo,cor
 //  Definindo tamanho máximo para as strings
 #define MAX 1000
@@ -25,30 +27,60 @@ struct Veiculo
     char tipo;
     String cor;
 };
-
-struct Marca
-{
-    char nome;
-};
 struct Veiculo carro;
-
-void veiculos_oferta()
+void verVeiculos()
 {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(hConsole, &csbi);
 
-    setlocale(LC_ALL, "Portuguese");
-    FILE *arquivo = fopen("veiculos_oferta.txt", "r");
-    if (arquivo == NULL)
-    {
-        perror("veiculos_oferta.csv");
+    // Defina o tamanho do buffer para coincidir com o tamanho da tela
+    COORD bufferSize = { csbi.srWindow.Right - csbi.srWindow.Left + 1, csbi.srWindow.Bottom - csbi.srWindow.Top + 1 };
+    SetConsoleScreenBufferSize(hConsole, bufferSize);
+
+    // Abra o arquivo para leitura
+    FILE* file = fopen("veiculos_ofertas.csv", "r");
+
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return 1;
     }
 
-    else
-    {
-        printf("arquivo aberto com sucesso");
+    // Leia o conteúdo do arquivo e exiba na tela
+    char buffer[1000];  // Ajuste o tamanho conforme necessário
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        printf("%s\n", buffer);
     }
+
+    // Feche o arquivo
+    fclose(file);
 
     return 0;
 }
+void cria_historico()
+{
+    FILE *historico=fopen("historico_compras.csv", "a");
+    if(historico==NULL)
+    {
+        perror("historico");
+    }
+    else
+    {
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
+        
+        fprintf(historico, "%d/%02d/%02d %02d:%02d:%02d,",  tm.tm_mday,tm.tm_mon + 1,tm.tm_year + 1900 , tm.tm_hour, tm.tm_min, tm.tm_sec);
+            fprintf(historico, "%d,%d,%s,%s,%c,%c,%s,%c,%c,%c,%c,%s\n",
+                carro.preco, carro.ano, carro.marca, carro.modelo,
+                carro.condicao, carro.combustivel, carro.odometro, carro.status,
+                carro.cambio, carro.tamanho, carro.tipo, carro.cor);
+    }
+    fclose(historico);
+
+    
+                
+}
+
 void venda_veiculos()
 {
 
@@ -68,14 +100,17 @@ void venda_veiculos()
 
     else
     {
-        char ler[MAX];
+        char *ler;
+        ler=malloc(sizeof(char)*MAX);
         int i = 0;
+        // pergunta o usuario as informações do veiculo para venda
         printf("Digite as informações do veiculo a ser vendido.\n (preco,ano,modelo,condicao,combustivel,odometro,status,cambio,tamanho,tipo,cor)");
         scanf("%d,%d,%99[^\n],%99[^\n],%c,%c,%99[^\n],%c,%c,%c,%c,%99[^\n]",
               &carro.preco, &carro.ano, carro.marca, carro.modelo,
               &carro.condicao, &carro.combustivel, carro.odometro,
               &carro.status, &carro.cambio, &carro.tamanho,
               &carro.tipo, &carro.cor);
+              fflush(stdin);
 
         while (fgets(ler, sizeof(ler), arquivo) != NULL)
         {
@@ -87,27 +122,15 @@ void venda_veiculos()
             {
                 fprintf(arquivo2, "%s", ler);
             }
-            // verifica se é diferente para copiar SOMENTE 1 VEZ para o documento de vendas e historico, sem isso vai copiar as mesmas informações até ficar do tamanho do arq original
-             if (carro.preco != atoi(ler) && carro.ano != atoi(ler) && strcmp(carro.marca, ler) != 0 && strcmp(carro.modelo, ler) != 0 && carro.condicao != ler &&
-                carro.combustivel != ler && strcmp(carro.odometro, ler) != 0 && carro.status != ler &&
-                carro.cambio != ler && carro.tamanho != ler &&
-                carro.tipo != ler && strcmp(carro.cor, ler) != 0)
-            {
-                fprintf(vendas, "%d,%d,%s,%s,%c,%c,%s,%c,%c,%c,%c,%s\n",
-                    carro.preco, carro.ano, carro.marca, carro.modelo,
-                    carro.condicao, carro.combustivel, carro.odometro, carro.status,
-                    carro.cambio, carro.tamanho, carro.tipo, carro.cor);
-                fprintf(historico, "%d/%02d/%02d %02d:%02d:%02d,", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-                fprintf(historico, "%d,%d,%s,%s,%c,%c,%s,%c,%c,%c,%c,%s\n",
-                    carro.preco, carro.ano, carro.marca, carro.modelo,
-                    carro.condicao, carro.combustivel, carro.odometro, carro.status,
-                    carro.cambio, carro.tamanho, carro.tipo, carro.cor);
-                    break;
-            }
-            
             
             i++;
         }
+        fprintf(vendas, "%d,%d,%s,%s,%c,%c,%s,%c,%c,%c,%c,%s\n",
+            carro.preco, carro.ano, carro.marca, carro.modelo,
+            carro.condicao, carro.combustivel, carro.odometro, carro.status,
+            carro.cambio, carro.tamanho, carro.tipo, carro.cor);
+            cria_historico();
+                
 
         fclose(vendas);
         fclose(arquivo);
@@ -117,19 +140,188 @@ void venda_veiculos()
         rename("temp.csv", "veiculos_ofertas.csv");
     }
 }
+struct Extratos
+{
+    int dia;
+    int ano;
+    int mes;
+    int dia_ate;
+    int mes_ate;
+    int ano_ate;
+};
+struct Extratos extrato;
+void extratos_compras() {
+    FILE *arqextrato = fopen("extratos_compras.csv", "w");
+    FILE *historico = fopen("historico_compras.csv", "r");
+
+    if (arqextrato == NULL) 
+    {
+        perror("arqextrato");
+    }
+         
+        char *ler;
+        int op = 0;
+        ler= malloc(sizeof(char)*MAX);  
+
+        printf("Digite a data para ver as compras (D/MM/YYYY) de: ");
+        scanf("%d/%d/%d", &extrato.dia, &extrato.mes, &extrato.ano);
+        printf("(D/MM/YYYY) ate: ");
+        scanf("%d/%d/%d", &extrato.dia_ate, &extrato.mes_ate, &extrato.ano_ate);
+        printf("Gerar relatorio: [0] SIM\n [1] NÃO (apenas mostrar na tela): ");
+        scanf("%d", &op);
+
+        while (fgets(ler, MAX, historico) != NULL) {
+            int dia, mes, ano;
+            sscanf(ler, "%d/%d/%d", &dia, &mes, &ano); // ler os numeros para fazer a comparação
+                //compara se o dia é maior ou igual o dia no arquivo e faz o mesmo com o resto e alterando para verificar o  menor
+            if ((dia >= extrato.dia && mes >= extrato.mes && ano >= extrato.ano) &&
+                (dia <= extrato.dia_ate && mes <= extrato.mes_ate && ano <= extrato.ano_ate)) {
+                if (op == 0) {
+                    fprintf(arqextrato, "%s\n", ler);
+                }
+                if (op == 1) {
+                    printf("%s\n", ler);
+                }
+            }
+        }
+    
+    fclose(arqextrato);
+    fclose(historico);
+    free(ler); // limpa a memoria
+}
+
+typedef struct {  
+    char nome_marca[M];
+    float taxa_da_marca;
+}Marcas_taxa;
+typedef struct{
+    char nome_carro[M];
+    char nome_marca[M];
+    float preco_carro;
+}Carro;
+//VETDADOS = NOME DO VETOR | MARCAS_TAXA = TIPO DO VETOR
+Marcas_taxa vetDados[QNT];
+Carro vetArq[QNT];
+
+
+void gravando_taxas(){
+    int i = 0;
+    char op;
+    FILE *ponteiro;
+
+    ponteiro = fopen("marcas.txt","w+");
+
+    if(ponteiro == NULL){
+        printf("Nao foi possivel abrir o arquivo");
+        return;
+    }
+  //VETDADOS = NOME DO VETOR | MARCAS_TAXA = TIPO DO VETOR
+
+    do{
+
+      printf("Digite o nome da marca e a taxa da marca (em porcentagem):\n");
+      scanf("%c %f\n", vetDados[i].nome_marca, &vetDados[i].taxa_da_marca);//CHECAR SE É %c mesmo ou %s ou %[^\n] (https://stackoverflow.com/questions/39431924/what-does-n-mean-in-c)
+      fprintf(ponteiro,"%s %.2f\n", vetDados[i].nome_marca, vetDados[i].taxa_da_marca);
+
+      printf("Deseja fazer novamente? s/n: ");
+      scanf("%c", &op);
+      i++;
+
+    }while(op == 's' || op == 'S');
+
+    printf("\nDados gravados com sucesso");
+
+    fclose(ponteiro);
+}
+
+void vetor_com_infos_de_taxa(){
+    int i = 0;
+    FILE *pntr1;
+
+    pntr1 = fopen ("veiculos_estoque.csv", "r");
+
+    if(pntr1 == 0){
+        printf("Nao foi possivel abrir os arquivos");
+        return;
+    }
+
+    for(i = 0; i<QNT; i++) fscanf(pntr1, "%s%s%f", vetArq[i].nome_carro, vetArq[i].nome_marca, &vetArq[i].preco_carro);
+
+    fclose(pntr1);
+}
+
+void taxas_finais () {
+    int i,j;
+    FILE *pntr;
+    pntr = fopen("final.txt","w+");
+
+    if(pntr == 0){
+        printf("Nao foi possivel abrir os arquivos");
+        return;
+    }
+
+    Carro vetFinal[QNT];
+
+    for(i=0; i<QNT; i++){
+
+        strcpy(vetFinal[i].nome_carro, vetArq[i].nome_carro);
+        fprintf(pntr,"%s ", vetFinal[i].nome_carro);
+
+        strcpy(vetFinal[i].nome_marca, vetArq[i].nome_marca);
+        fprintf(pntr,"%s ", vetFinal[i].nome_marca);
+
+        for(j=0; j<QNT;j++){       
+
+            if(vetArq[i].nome_marca == vetDados[j].nome_marca){
+
+                vetFinal[i].preco_carro = vetArq[i].preco_carro * ((100+vetDados[j].taxa_da_marca)/100);
+                fprintf(pntr,"%f\n", vetFinal[i].preco_carro);
+
+
+            } 
+
+        }
+    }
+
+    fclose(pntr);
+
+}
+
+
+
+
 int main()
 {
     int opcao;
-    printf("Escolha uma opcao abaixo: \n [1] Abrir veiculos em ofertas.\n");
+    printf("Escolha uma opcao abaixo: \n [1] Abrir veiculos em ofertas \n [2] Realizar uma venda.\n [3] Gravar taxa.\n [4] Informaçoes das taxas.\n [5] Relatorio de vendas .\n");
     scanf("%d", &opcao);
+    getchar();
+
     if (opcao == 1)
     {
+        verVeiculos();
+    }
+    if (opcao == 2)
+    {
         venda_veiculos();
+    }
+    else if (opcao == 3)
+    {
+       gravando_taxas();
+    }
+    else if (opcao == 4)
+    {
+       vetor_com_infos_de_taxa();
+    }
+    else if (opcao == 5)
+    {
+       extratos_compras();
     }
     else
     {
         return 0;
     }
+
 
     return 0;
 }
