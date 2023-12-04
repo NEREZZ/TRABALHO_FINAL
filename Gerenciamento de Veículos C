@@ -28,9 +28,10 @@ struct Veiculo
     String cor;
 };
 struct Veiculo carro;
+
 void verVeiculos()
-{
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+{   setlocale(LC_ALL, "");
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); // API specifica para manipulação do windows
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(hConsole, &csbi);
 
@@ -42,8 +43,7 @@ void verVeiculos()
     FILE* file = fopen("veiculos_ofertas.csv", "r");
 
     if (file == NULL) {
-        printf("Erro ao abrir o arquivo.\n");
-        return 1;
+        perror("veiculos_ofertas.csv");
     }
 
     // Leia o conteúdo do arquivo e exiba na tela
@@ -55,10 +55,11 @@ void verVeiculos()
     // Feche o arquivo
     fclose(file);
 
-    return 0;
+    main();
 }
 void cria_historico()
 {
+    setlocale(LC_ALL, "");
     FILE *historico=fopen("historico_compras.csv", "a");
     if(historico==NULL)
     {
@@ -76,9 +77,7 @@ void cria_historico()
                 carro.cambio, carro.tamanho, carro.tipo, carro.cor);
     }
     fclose(historico);
-
-    
-                
+    main();           
 }
 
 void venda_veiculos()
@@ -89,8 +88,8 @@ void venda_veiculos()
     FILE *arquivo2 = fopen("temp.csv", "w");
     FILE *vendas = fopen("veiculos_estoque.csv", "a");
     FILE *historico = fopen("historico_compras.csv", "a");
-    char temp[MAX];
-    int i = 0;
+    
+    int op=0;
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
     if (arquivo == NULL)
@@ -112,7 +111,7 @@ void venda_veiculos()
               &carro.tipo, &carro.cor);
               fflush(stdin);
 
-        while (fgets(ler, sizeof(ler), arquivo) != NULL)
+        while (fgets(ler, sizeof(ler), arquivo) != NULL) // le o conteudo do arquivo
         {
              
             if (carro.preco != atoi(ler) && carro.ano != atoi(ler) && strcmp(carro.marca, ler) != 0 && strcmp(carro.modelo, ler) != 0 && carro.condicao != ler &&
@@ -120,7 +119,7 @@ void venda_veiculos()
                 carro.cambio != ler && carro.tamanho != ler &&
                 carro.tipo != ler && strcmp(carro.cor, ler) != 0)
             {
-                fprintf(arquivo2, "%s", ler);
+                fprintf(arquivo2, "%s", ler); // escreve no arquivo
             }
             
             i++;
@@ -128,8 +127,8 @@ void venda_veiculos()
         fprintf(vendas, "%d,%d,%s,%s,%c,%c,%s,%c,%c,%c,%c,%s\n",
             carro.preco, carro.ano, carro.marca, carro.modelo,
             carro.condicao, carro.combustivel, carro.odometro, carro.status,
-            carro.cambio, carro.tamanho, carro.tipo, carro.cor);
-            cria_historico();
+            carro.cambio, carro.tamanho, carro.tipo, carro.cor); // escreve no arquivo
+            cria_historico(); // chama o procedimento para a criação do historico
                 
 
         fclose(vendas);
@@ -138,7 +137,18 @@ void venda_veiculos()
         fclose(historico);
         remove("veiculos_ofertas.csv");
         rename("temp.csv", "veiculos_ofertas.csv");
+        printf("Realizar uma nova compra: [1] Sim [0] Não\n :");
+        scanf("%d", &op);
+        if(op ==1)
+        {
+            venda_veiculos();
+        }
+        else if(op ==0)
+        {
+            main();
+        }
     }
+   
 }
 struct Extratos
 {
@@ -151,6 +161,7 @@ struct Extratos
 };
 struct Extratos extrato;
 void extratos_compras() {
+    setlocale(LC_ALL, "");
     FILE *arqextrato = fopen("extratos_compras.csv", "w");
     FILE *historico = fopen("historico_compras.csv", "r");
 
@@ -189,6 +200,89 @@ void extratos_compras() {
     fclose(historico);
     free(ler); // limpa a memoria
 }
+void backup_arquivos()
+{   setlocale(LC_ALL, "");
+    //arquivos para realizar o backup
+    FILE *taxas= fopen("final.txt","rb");
+    FILE *ofertas = fopen("veiculos_ofertas.csv", "rb");
+    FILE *arqextrato = fopen("extratos_compras.csv", "rb");
+    FILE *historico = fopen("historico_compras.csv", "rb");
+    FILE *vendas = fopen("veiculos_estoque.csv", "a");
+    // arquivos que irão ser o backup
+    FILE *ofertasB = fopen("backup_veiculos\\backup_veiculos_ofertas.txt", "wb");
+    FILE *vendasB = fopen("backup_veiculos\\backup_estoque.txt", "wb");
+    FILE *historicoB = fopen("backup_veiculos\\backup_historico.txt", "wb");
+    FILE *extratoB = fopen("backup_veiculos\\backup_extrato.txt", "wb");
+    FILE *taxasB = fopen("backup_veiculos\\backup_taxas.txt", "wb");
+    if(vendasB == NULL)
+    {
+        perror("backup_historico ou backup_vendas ou backup_extrato ou backup _taxas esta vazio");
+    }
+    char *backupVendas=malloc(sizeof(char)*MAX), *backupHistorico=malloc(sizeof(char)*MAX), *backupExtrato=malloc(sizeof(char)*MAX), *backupTaxa=malloc(sizeof(char)*MAX),*backupOfertas=malloc(sizeof(char)*MAX);
+
+   // Ler dos arquivos de origem e escrever nos arquivos de backup
+    while (1) 
+    {
+        size_t bytesRead = fread(backupVendas, 1, MAX, vendas);
+        if (bytesRead > 0) {
+            fwrite(backupVendas, 1, bytesRead, vendasB);
+        } else {
+            break; // Sair do loop quando não houver mais nada para ler
+        }
+    }
+    while (1)
+    {
+        size_t bytesRead = fread(backupTaxa, 1, MAX, taxas);
+        if (bytesRead > 0) {
+            fwrite(backupTaxa, 1, bytesRead, taxasB);
+        } else {
+            break; // Sair do loop quando não houver mais nada para ler
+        }
+    }
+    while (1) 
+    {
+        size_t bytesRead = fread(backupOfertas, 1, MAX, ofertas);
+        if (bytesRead > 0) {
+            fwrite(backupOfertas, 1, bytesRead, ofertasB);
+        } else {
+            break; // Sair do loop quando não houver mais nada para ler
+        }
+    }
+    
+     while (1) 
+    {
+        size_t bytesRead = fread(backupHistorico, 1, MAX, historico);
+        if (bytesRead > 0) {
+            fwrite(backupHistorico, 1, bytesRead, historicoB);
+        } else {
+            break; // Sair do loop quando não houver mais nada para ler
+        }
+    }
+     while (1) 
+    {
+        size_t bytesRead = fread(backupExtrato, 1, MAX, arqextrato);
+        if (bytesRead > 0) {
+            fwrite(backupExtrato, 1, bytesRead, extratoB);
+        } else {
+            break; // Sair do loop quando não houver mais nada para ler
+        }
+    }
+   
+    
+    //fechando os arquivos
+    fclose(taxas);
+    fclose(vendas);
+    fclose(ofertas);
+    fclose(historico);
+    fclose(arqextrato);
+    fclose(taxasB);
+    fclose(vendasB);
+    fclose(ofertasB);
+    fclose(historicoB);
+    fclose(extratoB);
+    main();
+}
+
 
 typedef struct {  
     char nome_marca[M];
@@ -292,36 +386,47 @@ void taxas_finais () {
 
 int main()
 {
+    setlocale(LC_ALL, "portuguese");
     int opcao;
-    printf("Escolha uma opcao abaixo: \n [1] Abrir veiculos em ofertas \n [2] Realizar uma venda.\n [3] Gravar taxa.\n [4] Informaçoes das taxas.\n [5] Relatorio de vendas .\n");
+    printf("Escolha uma opcao abaixo: \n [1] Abrir veiculos em ofertas \n [2] Realizar uma venda.\n [3] Gravar taxa.\n [4] Informaçoes das taxas.\n [5] Relatorio de vendas .\n [6] Realizar backup .\n [0] Sair e salvar alterções : ");
     scanf("%d", &opcao);
     getchar();
+    while(opcao !=0)
+    {
+        if (opcao == 1)
+        {
+            verVeiculos();
+        }
+        if (opcao == 2)
+        {
+            venda_veiculos();
+        }
+        else if (opcao == 3)
+        {
+        gravando_taxas();
+        }
+        else if (opcao == 4)
+        {
+        vetor_com_infos_de_taxa();
+        }
+        else if (opcao == 5)
+        {
+        extratos_compras();
+        }
+        else if(opcao == 6)
+        {
+            // diretorio       //segurança
+            if (CreateDirectory("backup_veiculos", NULL))
+            {
+                printf("Arquivo criado com sucesso\n");
+            }
+            backup_arquivos();
+        }
+        else
+        {
+            return 0;
+        }
 
-    if (opcao == 1)
-    {
-        verVeiculos();
     }
-    if (opcao == 2)
-    {
-        venda_veiculos();
-    }
-    else if (opcao == 3)
-    {
-       gravando_taxas();
-    }
-    else if (opcao == 4)
-    {
-       vetor_com_infos_de_taxa();
-    }
-    else if (opcao == 5)
-    {
-       extratos_compras();
-    }
-    else
-    {
-        return 0;
-    }
-
-
     return 0;
 }
