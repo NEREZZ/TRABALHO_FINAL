@@ -55,7 +55,7 @@ void verVeiculos()
     // Feche o arquivo
     fclose(file);
 
-    main();
+   
 }
 void cria_historico()
 {
@@ -77,7 +77,7 @@ void cria_historico()
                 carro.cambio, carro.tamanho, carro.tipo, carro.cor);
     }
     fclose(historico);
-    main();           
+        
 }
 
 void venda_veiculos()
@@ -97,7 +97,7 @@ void venda_veiculos()
         perror("veiculos_oferta.csv");
     }
 
-    else
+    do
     {
         char *ler;
         ler=malloc(sizeof(char)*MAX);
@@ -137,19 +137,15 @@ void venda_veiculos()
         fclose(historico);
         remove("veiculos_ofertas.csv");
         rename("temp.csv", "veiculos_ofertas.csv");
-        printf("Realizar uma nova compra: [1] Sim [0] Não\n :");
+        printf("Compra realizada! \n");
+        printf("Realizar nova operação? [1] Sim [0] Não \n");
         scanf("%d", &op);
-        if(op ==1)
-        {
-            venda_veiculos();
-        }
-        else if(op ==0)
-        {
-            main();
-        }
+    }while(op !=0);
+    main();
+        
     }
    
-}
+
 struct Extratos
 {
     int dia;
@@ -169,7 +165,9 @@ void extratos_compras() {
     {
         perror("arqextrato");
     }
-         
+    int op=0;
+    do
+    {     
         char *ler;
         int op = 0;
         ler= malloc(sizeof(char)*MAX);  
@@ -198,7 +196,11 @@ void extratos_compras() {
     
     fclose(arqextrato);
     fclose(historico);
-    free(ler); // limpa a memoria
+    free(ler); 
+    printf("Realizar nova operação? [1] Sim [0] Não \n");
+        scanf("%d", &op);
+    }while(op !=0);
+    main();// limpa a memoria
 }
 void backup_arquivos()
 {   setlocale(LC_ALL, "");
@@ -219,68 +221,74 @@ void backup_arquivos()
         perror("backup_historico ou backup_vendas ou backup_extrato ou backup _taxas esta vazio");
     }
     char *backupVendas=malloc(sizeof(char)*MAX), *backupHistorico=malloc(sizeof(char)*MAX), *backupExtrato=malloc(sizeof(char)*MAX), *backupTaxa=malloc(sizeof(char)*MAX),*backupOfertas=malloc(sizeof(char)*MAX);
+    int op=0;
+    do{
 
-   // Ler dos arquivos de origem e escrever nos arquivos de backup
-    while (1) 
-    {
-        size_t bytesRead = fread(backupVendas, 1, MAX, vendas);
-        if (bytesRead > 0) {
-            fwrite(backupVendas, 1, bytesRead, vendasB);
-        } else {
-            break; // Sair do loop quando não houver mais nada para ler
+    // Ler dos arquivos de origem e escrever nos arquivos de backup
+        while (1) 
+        {
+            size_t bytesRead = fread(backupVendas, 1, MAX, vendas);
+            if (bytesRead > 0) {
+                fwrite(backupVendas, 1, bytesRead, vendasB);
+            } else {
+                break; // Sair do loop quando não houver mais nada para ler
+            }
         }
-    }
-    while (1)
-    {
-        size_t bytesRead = fread(backupTaxa, 1, MAX, taxas);
-        if (bytesRead > 0) {
-            fwrite(backupTaxa, 1, bytesRead, taxasB);
-        } else {
-            break; // Sair do loop quando não houver mais nada para ler
+        while (1)
+        {
+            size_t bytesRead = fread(backupTaxa, 1, MAX, taxas);
+            if (bytesRead > 0) {
+                fwrite(backupTaxa, 1, bytesRead, taxasB);
+            } else {
+                break; // Sair do loop quando não houver mais nada para ler
+            }
         }
-    }
-    while (1) 
-    {
-        size_t bytesRead = fread(backupOfertas, 1, MAX, ofertas);
-        if (bytesRead > 0) {
-            fwrite(backupOfertas, 1, bytesRead, ofertasB);
-        } else {
-            break; // Sair do loop quando não houver mais nada para ler
+        while (1) 
+        {
+            size_t bytesRead = fread(backupOfertas, 1, MAX, ofertas);
+            if (bytesRead > 0) {
+                fwrite(backupOfertas, 1, bytesRead, ofertasB);
+            } else {
+                break; // Sair do loop quando não houver mais nada para ler
+            }
         }
-    }
+        
+        while (1) 
+        {
+            size_t bytesRead = fread(backupHistorico, 1, MAX, historico);
+            if (bytesRead > 0) {
+                fwrite(backupHistorico, 1, bytesRead, historicoB);
+            } else {
+                break; // Sair do loop quando não houver mais nada para ler
+            }
+        }
+        while (1) 
+        {
+            size_t bytesRead = fread(backupExtrato, 1, MAX, arqextrato);
+            if (bytesRead > 0) {
+                fwrite(backupExtrato, 1, bytesRead, extratoB);
+            } else {
+                break; // Sair do loop quando não houver mais nada para ler
+            }
+        }
     
-     while (1) 
-    {
-        size_t bytesRead = fread(backupHistorico, 1, MAX, historico);
-        if (bytesRead > 0) {
-            fwrite(backupHistorico, 1, bytesRead, historicoB);
-        } else {
-            break; // Sair do loop quando não houver mais nada para ler
-        }
-    }
-     while (1) 
-    {
-        size_t bytesRead = fread(backupExtrato, 1, MAX, arqextrato);
-        if (bytesRead > 0) {
-            fwrite(backupExtrato, 1, bytesRead, extratoB);
-        } else {
-            break; // Sair do loop quando não houver mais nada para ler
-        }
-    }
-   
-    
-    //fechando os arquivos
-    fclose(taxas);
-    fclose(vendas);
-    fclose(ofertas);
-    fclose(historico);
-    fclose(arqextrato);
-    fclose(taxasB);
-    fclose(vendasB);
-    fclose(ofertasB);
-    fclose(historicoB);
-    fclose(extratoB);
+        
+        //fechando os arquivos
+        fclose(taxas);
+        fclose(vendas);
+        fclose(ofertas);
+        fclose(historico);
+        fclose(arqextrato);
+        fclose(taxasB);
+        fclose(vendasB);
+        fclose(ofertasB);
+        fclose(historicoB);
+        fclose(extratoB);
+        printf("Realizar nova operação? [1] Sim [0] Não \n");
+        scanf("%d", &op);
+    }while(op !=0);
     main();
+    
 }
 
 
@@ -384,49 +392,46 @@ void taxas_finais () {
 
 
 
+
 int main()
+
 {
     setlocale(LC_ALL, "portuguese");
+
     int opcao;
-    printf("Escolha uma opcao abaixo: \n [1] Abrir veiculos em ofertas \n [2] Realizar uma venda.\n [3] Gravar taxa.\n [4] Informaçoes das taxas.\n [5] Relatorio de vendas .\n [6] Realizar backup .\n [0] Sair e salvar alterções : ");
-    scanf("%d", &opcao);
-    getchar();
-    while(opcao !=0)
-    {
-        if (opcao == 1)
-        {
-            verVeiculos();
-        }
-        if (opcao == 2)
-        {
-            venda_veiculos();
-        }
-        else if (opcao == 3)
-        {
-        gravando_taxas();
-        }
-        else if (opcao == 4)
-        {
-        vetor_com_infos_de_taxa();
-        }
-        else if (opcao == 5)
-        {
-        extratos_compras();
-        }
-        else if(opcao == 6)
-        {
-            // diretorio       //segurança
-            if (CreateDirectory("backup_veiculos", NULL))
-            {
-                printf("Arquivo criado com sucesso\n");
-            }
-            backup_arquivos();
-        }
-        else
-        {
-            return 0;
+
+    do {
+        printf("Escolha uma opção abaixo:\n [1] Abrir veículos em ofertas\n [2] Realizar uma venda\n [3] Gravar taxa\n [4] Informações das taxas\n [5] Relatório de vendas\n [6] Realizar backup\n [0] Sair e salvar alterações: ");
+        scanf("%d", &opcao);
+        getchar();  // Limpa o caractere de nova linha no buffer de entrada
+
+        switch (opcao) {
+            case 1:
+                verVeiculos();
+                break;
+            case 2:
+                venda_veiculos();
+                break;
+            case 3:
+                gravando_taxas();
+                break;
+            case 4:
+                vetor_com_infos_de_taxa();
+                break;
+            case 5:
+                extratos_compras();
+                break;
+            case 6:
+                backup_arquivos();
+                break;
+            case 0:
+                printf("Saindo e salvando alterações...\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
         }
 
-    }
+    } while (opcao != 0);
+
     return 0;
 }
