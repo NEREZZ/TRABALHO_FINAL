@@ -96,25 +96,27 @@ void venda_veiculos()
     {
         perror("veiculos_oferta.csv");
     }
-
+    char *ler[MAX];
+    
+    int i = 0,preco_auxiliar;
     do
     {
-        char *ler;
-        ler=malloc(sizeof(char)*MAX);
-        int i = 0;
+        
+        
+        
         // pergunta o usuario as informações do veiculo para venda
-        printf("Digite as informações do veiculo a ser vendido.\n (preco,ano,modelo,condicao,combustivel,odometro,status,cambio,tamanho,tipo,cor)");
-        scanf("%d,%d,%99[^\n],%99[^\n],%c,%c,%99[^\n],%c,%c,%c,%c,%99[^\n]",
-              &carro.preco, &carro.ano, carro.marca, carro.modelo,
-              &carro.condicao, &carro.combustivel, carro.odometro,
+        printf("Digite as informações do veiculo a ser vendido.\n (preco,ano,modelo,condicao,combustivel,odometro,status,cambio,tamanho,tipo,cor):");
+        scanf("%d,%d,%[^\n],%[^\n],%c,%c,%[^\n],%c,%c,%c,%c,%[^\n]",
+              &carro.preco, &carro.ano, &carro.marca, &carro.modelo,
+              &carro.condicao, &carro.combustivel, &carro.odometro,
               &carro.status, &carro.cambio, &carro.tamanho,
               &carro.tipo, &carro.cor);
-              fflush(stdin);
+              
 
         while (fgets(ler, sizeof(ler), arquivo) != NULL) // le o conteudo do arquivo
         {
              
-            if (carro.preco != atoi(ler) && carro.ano != atoi(ler) && strcmp(carro.marca, ler) != 0 && strcmp(carro.modelo, ler) != 0 && carro.condicao != ler &&
+           if (carro.preco != atoi(ler) && carro.ano != atoi(ler) && strcmp(carro.marca, ler) != 0 && strcmp(carro.modelo, ler) != 0 && carro.condicao != ler &&
                 carro.combustivel != ler && strcmp(carro.odometro, ler) != 0 && carro.status != ler &&
                 carro.cambio != ler && carro.tamanho != ler &&
                 carro.tipo != ler && strcmp(carro.cor, ler) != 0)
@@ -124,11 +126,14 @@ void venda_veiculos()
             
             i++;
         }
-        fprintf(vendas, "%d,%d,%s,%s,%c,%c,%s,%c,%c,%c,%c,%s\n",
+        cria_historico(); // chama o procedimento para a criação do historico
+        printf("Digite o novo preco para o carro: ");
+        scanf("%d", &carro.preco);
+        fprintf(vendas, "%d,%d%s%s%c%c%s%c%c%c%c%s\n", 
             carro.preco, carro.ano, carro.marca, carro.modelo,
             carro.condicao, carro.combustivel, carro.odometro, carro.status,
             carro.cambio, carro.tamanho, carro.tipo, carro.cor); // escreve no arquivo
-            cria_historico(); // chama o procedimento para a criação do historico
+            
                 
 
         fclose(vendas);
@@ -141,7 +146,8 @@ void venda_veiculos()
         printf("Realizar nova operação? [1] Sim [0] Não \n");
         scanf("%d", &op);
     }while(op !=0);
-    main();
+    free(ler);// limpa a memoria
+   
         
     }
    
@@ -165,12 +171,14 @@ void extratos_compras() {
     {
         perror("arqextrato");
     }
-    int op=0;
+    
+
+    char ler[MAX];
+    int op = 0;
+    
     do
     {     
-        char *ler;
-        int op = 0;
-        ler= malloc(sizeof(char)*MAX);  
+        
 
         printf("Digite a data para ver as compras (D/MM/YYYY) de: ");
         scanf("%d/%d/%d", &extrato.dia, &extrato.mes, &extrato.ano);
@@ -196,11 +204,11 @@ void extratos_compras() {
     
     fclose(arqextrato);
     fclose(historico);
-    free(ler); 
+    free(ler); // limpa a memoria
     printf("Realizar nova operação? [1] Sim [0] Não \n");
         scanf("%d", &op);
     }while(op !=0);
-    main();// limpa a memoria
+    
 }
 void backup_arquivos()
 {   setlocale(LC_ALL, "");
@@ -209,13 +217,13 @@ void backup_arquivos()
     FILE *ofertas = fopen("veiculos_ofertas.csv", "rb");
     FILE *arqextrato = fopen("extratos_compras.csv", "rb");
     FILE *historico = fopen("historico_compras.csv", "rb");
-    FILE *vendas = fopen("veiculos_estoque.csv", "a");
+    FILE *vendas = fopen("veiculos_estoque.csv", "rb");
     // arquivos que irão ser o backup
-    FILE *ofertasB = fopen("backup_veiculos\\backup_veiculos_ofertas.txt", "wb");
-    FILE *vendasB = fopen("backup_veiculos\\backup_estoque.txt", "wb");
-    FILE *historicoB = fopen("backup_veiculos\\backup_historico.txt", "wb");
-    FILE *extratoB = fopen("backup_veiculos\\backup_extrato.txt", "wb");
-    FILE *taxasB = fopen("backup_veiculos\\backup_taxas.txt", "wb");
+    FILE *ofertasB = fopen("backup_veiculos\\backup_veiculos_ofertas.bin", "wb");
+    FILE *vendasB = fopen("backup_veiculos\\backup_estoque.bin", "wb");
+    FILE *historicoB = fopen("backup_veiculos\\backup_historico.bin", "wb");
+    FILE *extratoB = fopen("backup_veiculos\\backup_extrato.bin", "wb");
+    FILE *taxasB = fopen("backup_veiculos\\backup_taxas.bin", "wb");
     if(vendasB == NULL)
     {
         perror("backup_historico ou backup_vendas ou backup_extrato ou backup _taxas esta vazio");
@@ -287,7 +295,12 @@ void backup_arquivos()
         printf("Realizar nova operação? [1] Sim [0] Não \n");
         scanf("%d", &op);
     }while(op !=0);
-    main();
+    free(backup_arquivos); // limpa a memoria
+    free(backupExtrato);// limpa a memoria
+    free(backupHistorico);// limpa a memoria
+    free(backupOfertas);// limpa a memoria
+    free(backupVendas);// limpa a memoria
+     
     
 }
 
@@ -392,13 +405,13 @@ void taxas_finais () {
 
 
 
-
 int main()
 
 {
     setlocale(LC_ALL, "portuguese");
 
     int opcao;
+    
 
     do {
         printf("Escolha uma opção abaixo:\n [1] Abrir veículos em ofertas\n [2] Realizar uma venda\n [3] Gravar taxa\n [4] Informações das taxas\n [5] Relatório de vendas\n [6] Realizar backup\n [0] Sair e salvar alterações: ");
@@ -422,10 +435,17 @@ int main()
                 extratos_compras();
                 break;
             case 6:
+                                    // diretorio       //segurança
+                if (CreateDirectory("backup_veiculos", NULL))
+                {
+                    printf("Arquivo criado com sucesso\n");
+                }
+
                 backup_arquivos();
                 break;
             case 0:
                 printf("Saindo e salvando alterações...\n");
+                
                 break;
             default:
                 printf("Opção inválida. Tente novamente.\n");
