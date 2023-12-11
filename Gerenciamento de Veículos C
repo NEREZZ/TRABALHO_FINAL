@@ -6,7 +6,7 @@
 #define M 100
 #define QNT 100
 // preco,ano,marca,modelo,condicao,combustivel,odometro,status,cambio,tamanho,tipo,cor
-//  Definindo tamanho máximo para as strings
+//  Definindo tamanho m�ximo para as strings
 #define MAX 1000
 
 // Definindo tipos de dados apropriados para as strings
@@ -31,7 +31,7 @@ struct Veiculo carro;
 
 void verVeiculos()
 {   setlocale(LC_ALL, "");
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); // API specifica para manipulação do windows
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); // API especifica para manipula��o do windows
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(hConsole, &csbi);
 
@@ -46,8 +46,8 @@ void verVeiculos()
         perror("veiculos_ofertas.csv");
     }
 
-    // Leia o conteúdo do arquivo e exiba na tela
-    char buffer[1000];  // Ajuste o tamanho conforme necessário
+    // Leia o conte�do do arquivo e exiba na tela
+    char buffer[1000];  // Ajuste o tamanho conforme necess�rio
     while (fgets(buffer, sizeof(buffer), file) != NULL) {
         printf("%s\n", buffer);
     }
@@ -55,7 +55,7 @@ void verVeiculos()
     // Feche o arquivo
     fclose(file);
 
-   
+
 }
 void cria_historico()
 {
@@ -69,7 +69,7 @@ void cria_historico()
     {
         time_t t = time(NULL);
         struct tm tm = *localtime(&t);
-        
+
         fprintf(historico, "%d/%02d/%02d %02d:%02d:%02d,",  tm.tm_mday,tm.tm_mon + 1,tm.tm_year + 1900 , tm.tm_hour, tm.tm_min, tm.tm_sec);
             fprintf(historico, "%d,%d,%s,%s,%c,%c,%s,%c,%c,%c,%c,%s\n",
                 carro.preco, carro.ano, carro.marca, carro.modelo,
@@ -77,7 +77,7 @@ void cria_historico()
                 carro.cambio, carro.tamanho, carro.tipo, carro.cor);
     }
     fclose(historico);
-        
+
 }
 
 void venda_veiculos()
@@ -88,7 +88,7 @@ void venda_veiculos()
     FILE *arquivo2 = fopen("temp.csv", "w");
     FILE *vendas = fopen("veiculos_estoque.csv", "a");
     FILE *historico = fopen("historico_compras.csv", "a");
-    
+
     int op=0;
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
@@ -97,25 +97,25 @@ void venda_veiculos()
         perror("veiculos_oferta.csv");
     }
     char *ler[MAX];
-    
+
     int i = 0,preco_auxiliar;
     do
     {
-        
-        
-        
-        // pergunta o usuario as informações do veiculo para venda
-        printf("Digite as informações do veiculo a ser vendido.\n (preco,ano,modelo,condicao,combustivel,odometro,status,cambio,tamanho,tipo,cor):");
+
+
+
+        // pergunta o usuario as informa��es do veiculo para venda
+        printf("Digite as informacoes do veiculo a ser vendido.\n (preco,ano,modelo,condicao,combustivel,odometro,status,cambio,tamanho,tipo,cor):\n");
         scanf("%d,%d,%[^\n],%[^\n],%c,%c,%[^\n],%c,%c,%c,%c,%[^\n]",
               &carro.preco, &carro.ano, &carro.marca, &carro.modelo,
               &carro.condicao, &carro.combustivel, &carro.odometro,
               &carro.status, &carro.cambio, &carro.tamanho,
               &carro.tipo, &carro.cor);
-              
+
 
         while (fgets(ler, sizeof(ler), arquivo) != NULL) // le o conteudo do arquivo
         {
-             
+
            if (carro.preco != atoi(ler) && carro.ano != atoi(ler) && strcmp(carro.marca, ler) != 0 && strcmp(carro.modelo, ler) != 0 && carro.condicao != ler &&
                 carro.combustivel != ler && strcmp(carro.odometro, ler) != 0 && carro.status != ler &&
                 carro.cambio != ler && carro.tamanho != ler &&
@@ -123,18 +123,18 @@ void venda_veiculos()
             {
                 fprintf(arquivo2, "%s", ler); // escreve no arquivo
             }
-            
+
             i++;
         }
-        cria_historico(); // chama o procedimento para a criação do historico
+        cria_historico(); // chama o procedimento para a cria��o do historico
         printf("Digite o novo preco para o carro: ");
         scanf("%d", &carro.preco);
-        fprintf(vendas, "%d,%d%s%s%c%c%s%c%c%c%c%s\n", 
+        fprintf(vendas, "%d,%d%s%s%c%c%s%c%c%c%c%s\n",
             carro.preco, carro.ano, carro.marca, carro.modelo,
             carro.condicao, carro.combustivel, carro.odometro, carro.status,
             carro.cambio, carro.tamanho, carro.tipo, carro.cor); // escreve no arquivo
-            
-                
+
+
 
         fclose(vendas);
         fclose(arquivo);
@@ -143,14 +143,14 @@ void venda_veiculos()
         remove("veiculos_ofertas.csv");
         rename("temp.csv", "veiculos_ofertas.csv");
         printf("Compra realizada! \n");
-        printf("Realizar nova operação? [1] Sim [0] Não \n");
+        printf("Realizar nova operacao? [1] Sim [0] N�o \n");
         scanf("%d", &op);
     }while(op !=0);
     free(ler);// limpa a memoria
-   
-        
+
+
     }
-   
+
 
 struct Extratos
 {
@@ -167,30 +167,30 @@ void extratos_compras() {
     FILE *arqextrato = fopen("extratos_compras.csv", "w");
     FILE *historico = fopen("historico_compras.csv", "r");
 
-    if (arqextrato == NULL) 
+    if (arqextrato == NULL)
     {
         perror("arqextrato");
     }
-    
+
 
     char ler[MAX];
     int op = 0;
-    
+
     do
-    {     
-        
+    {
+
 
         printf("Digite a data para ver as compras (D/MM/YYYY) de: ");
         scanf("%d/%d/%d", &extrato.dia, &extrato.mes, &extrato.ano);
         printf("(D/MM/YYYY) ate: ");
         scanf("%d/%d/%d", &extrato.dia_ate, &extrato.mes_ate, &extrato.ano_ate);
-        printf("Gerar relatorio: [0] SIM\n [1] NÃO (apenas mostrar na tela): ");
+        printf("Gerar relatorio: [0] SIM\n [1] NAO (apenas mostrar na tela): ");
         scanf("%d", &op);
 
         while (fgets(ler, MAX, historico) != NULL) {
             int dia, mes, ano;
-            sscanf(ler, "%d/%d/%d", &dia, &mes, &ano); // ler os numeros para fazer a comparação
-                //compara se o dia é maior ou igual o dia no arquivo e faz o mesmo com o resto e alterando para verificar o  menor
+            sscanf(ler, "%d/%d/%d", &dia, &mes, &ano); // ler os numeros para fazer a compara��o
+                //compara se o dia � maior ou igual o dia no arquivo e faz o mesmo com o resto e alterando para verificar o  menor
             if ((dia >= extrato.dia && mes >= extrato.mes && ano >= extrato.ano) &&
                 (dia <= extrato.dia_ate && mes <= extrato.mes_ate && ano <= extrato.ano_ate)) {
                 if (op == 0) {
@@ -201,14 +201,16 @@ void extratos_compras() {
                 }
             }
         }
-    
+
     fclose(arqextrato);
     fclose(historico);
     free(ler); // limpa a memoria
-    printf("Realizar nova operação? [1] Sim [0] Não \n");
+    printf("Relatorio criado com sucesso!\n");
+
+    printf("Realizar nova operacao? [1] Sim [0] Nao \n");
         scanf("%d", &op);
     }while(op !=0);
-    
+
 }
 void backup_arquivos()
 {   setlocale(LC_ALL, "");
@@ -218,7 +220,7 @@ void backup_arquivos()
     FILE *arqextrato = fopen("extratos_compras.csv", "rb");
     FILE *historico = fopen("historico_compras.csv", "rb");
     FILE *vendas = fopen("veiculos_estoque.csv", "rb");
-    // arquivos que irão ser o backup
+    // arquivos que ir�o ser o backup
     FILE *ofertasB = fopen("backup_veiculos\\backup_veiculos_ofertas.bin", "wb");
     FILE *vendasB = fopen("backup_veiculos\\backup_estoque.bin", "wb");
     FILE *historicoB = fopen("backup_veiculos\\backup_historico.bin", "wb");
@@ -233,13 +235,13 @@ void backup_arquivos()
     do{
 
     // Ler dos arquivos de origem e escrever nos arquivos de backup
-        while (1) 
+        while (1)
         {
             size_t bytesRead = fread(backupVendas, 1, MAX, vendas);
             if (bytesRead > 0) {
                 fwrite(backupVendas, 1, bytesRead, vendasB);
             } else {
-                break; // Sair do loop quando não houver mais nada para ler
+                break; // Sair do loop quando n�o houver mais nada para ler
             }
         }
         while (1)
@@ -248,39 +250,39 @@ void backup_arquivos()
             if (bytesRead > 0) {
                 fwrite(backupTaxa, 1, bytesRead, taxasB);
             } else {
-                break; // Sair do loop quando não houver mais nada para ler
+                break; // Sair do loop quando n�o houver mais nada para ler
             }
         }
-        while (1) 
+        while (1)
         {
             size_t bytesRead = fread(backupOfertas, 1, MAX, ofertas);
             if (bytesRead > 0) {
                 fwrite(backupOfertas, 1, bytesRead, ofertasB);
             } else {
-                break; // Sair do loop quando não houver mais nada para ler
+                break; // Sair do loop quando n�o houver mais nada para ler
             }
         }
-        
-        while (1) 
+
+        while (1)
         {
             size_t bytesRead = fread(backupHistorico, 1, MAX, historico);
             if (bytesRead > 0) {
                 fwrite(backupHistorico, 1, bytesRead, historicoB);
             } else {
-                break; // Sair do loop quando não houver mais nada para ler
+                break; // Sair do loop quando n�o houver mais nada para ler
             }
         }
-        while (1) 
+        while (1)
         {
             size_t bytesRead = fread(backupExtrato, 1, MAX, arqextrato);
             if (bytesRead > 0) {
                 fwrite(backupExtrato, 1, bytesRead, extratoB);
             } else {
-                break; // Sair do loop quando não houver mais nada para ler
+                break; // Sair do loop quando n�o houver mais nada para ler
             }
         }
-    
-        
+
+
         //fechando os arquivos
         fclose(taxas);
         fclose(vendas);
@@ -292,7 +294,8 @@ void backup_arquivos()
         fclose(ofertasB);
         fclose(historicoB);
         fclose(extratoB);
-        printf("Realizar nova operação? [1] Sim [0] Não \n");
+        printf("Backup concluido!\n");
+        printf("Realizar nova operacao? [1] Sim [0] Nao \n");
         scanf("%d", &op);
     }while(op !=0);
     free(backup_arquivos); // limpa a memoria
@@ -300,12 +303,12 @@ void backup_arquivos()
     free(backupHistorico);// limpa a memoria
     free(backupOfertas);// limpa a memoria
     free(backupVendas);// limpa a memoria
-     
-    
+
+
 }
 
 
-typedef struct {  
+typedef struct {
     char nome_marca[M];
     float taxa_da_marca;
 }Marcas_taxa;
@@ -313,10 +316,12 @@ typedef struct{
     char nome_carro[M];
     char nome_marca[M];
     float preco_carro;
+    float taxa_da_marca;
 }Carro;
 //VETDADOS = NOME DO VETOR | MARCAS_TAXA = TIPO DO VETOR
 Marcas_taxa vetDados[QNT];
 Carro vetArq[QNT];
+Carro vetFinal[QNT];
 
 
 void gravando_taxas(){
@@ -331,22 +336,15 @@ void gravando_taxas(){
         return;
     }
   //VETDADOS = NOME DO VETOR | MARCAS_TAXA = TIPO DO VETOR
-
-    do{
-
-      printf("Digite o nome da marca e a taxa da marca (em porcentagem):\n");
-      scanf("%c %f\n", vetDados[i].nome_marca, &vetDados[i].taxa_da_marca);//CHECAR SE É %c mesmo ou %s ou %[^\n] (https://stackoverflow.com/questions/39431924/what-does-n-mean-in-c)
-      fprintf(ponteiro,"%s %.2f\n", vetDados[i].nome_marca, vetDados[i].taxa_da_marca);
-
-      printf("Deseja fazer novamente? s/n: ");
-      scanf("%c", &op);
-      i++;
-
-    }while(op == 's' || op == 'S');
-
-    printf("\nDados gravados com sucesso");
+    printf("Digite o nome da marca e a taxa da marca (em porcentagem):\n");
+    scanf("%c %f\n", vetDados[i].nome_marca, vetDados[i].taxa_da_marca);//CHECAR SE � %c mesmo ou %s ou %[^\n] (https://stackoverflow.com/questions/39431924/what-does-n-mean-in-c)
+    fprintf(ponteiro,"%s %.2f\n", vetDados[i].nome_marca, vetDados[i].taxa_da_marca);
+    getchar();
+    printf("\nDados gravados com sucesso!\n");
 
     fclose(ponteiro);
+
+    return;
 }
 
 void vetor_com_infos_de_taxa(){
@@ -360,9 +358,11 @@ void vetor_com_infos_de_taxa(){
         return;
     }
 
-    for(i = 0; i<QNT; i++) fscanf(pntr1, "%s%s%f", vetArq[i].nome_carro, vetArq[i].nome_marca, &vetArq[i].preco_carro);
-
+    for(i = 0; i<QNT; i++){
+        fscanf(pntr1, "%c%c%f", vetArq[i].nome_carro, vetArq[i].nome_marca, &vetArq[i].preco_carro);
+    }
     fclose(pntr1);
+
 }
 
 void taxas_finais () {
@@ -374,31 +374,316 @@ void taxas_finais () {
         printf("Nao foi possivel abrir os arquivos");
         return;
     }
-
     Carro vetFinal[QNT];
 
     for(i=0; i<QNT; i++){
+    strcpy(vetFinal[i].nome_carro, vetArq[i].nome_carro);
+    strcpy(vetFinal[i].nome_marca, vetArq[i].nome_marca);
+    }
 
-        strcpy(vetFinal[i].nome_carro, vetArq[i].nome_carro);
-        fprintf(pntr,"%s ", vetFinal[i].nome_carro);
+    for(i=0; i<QNT; i++){
+        vetFinal[i].taxa_da_marca = vetDados[i].taxa_da_marca;
+    }
 
-        strcpy(vetFinal[i].nome_marca, vetArq[i].nome_marca);
-        fprintf(pntr,"%s ", vetFinal[i].nome_marca);
-
-        for(j=0; j<QNT;j++){       
-
-            if(vetArq[i].nome_marca == vetDados[j].nome_marca){
-
-                vetFinal[i].preco_carro = vetArq[i].preco_carro * ((100+vetDados[j].taxa_da_marca)/100);
-                fprintf(pntr,"%f\n", vetFinal[i].preco_carro);
-
-
-            } 
-
-        }
+    for(i=0; i<QNT; i++){
+        vetFinal[i].preco_carro = vetArq[i].preco_carro * ((100+vetDados[i].taxa_da_marca)/100);
+        printf("%f\n", vetFinal[i].preco_carro);
     }
 
     fclose(pntr);
+}
+
+typedef struct{
+    float preco;
+    int ano;
+    char nome_marca[M];
+    char modelo[M];
+    char condicao;
+    double odometro;
+}cond_pesquisa;
+
+    vetMarca[QNT];
+    vetModelo[QNT];
+
+    cond_pesquisa vetFiltro[QNT];
+    cond_pesquisa vetCompra[QNT];
+    cond_pesquisa vetVenda[QNT];
+
+//PEGANDO OS INTENS PARA PESQUISA
+void info_de_pesquisa(){
+  int i = 0, op;
+  char volta;
+
+  cond_pesquisa vetFiltro[QNT];
+
+  do{
+
+    printf("\nQuais dados serao digitados: (1)Pre�o, (2)Ano, (3)Nome, (4)Modelo, (5)Condi��o, (6)Odometro, (7)Preco e Ano, (8)Preco e Nome, (9)Preco e Modelo, (10)Preco e Condi��o, (11)Preco e Kilometragem, (12)Ano e Nome, (13)Ano e Modelo, (14)Ano e Condi��o, (15)Ano e Kilometragem, (16)Nome e Modelo, (17)Nome e Condi��o, (18)Nome e Kilometragem, (19)Modelo e Condi�ao, (20)Modelo e Kilometragem, (21)Condi��o e Kilometragem, (22)");
+    scanf("%d", &op);
+    switch(op){
+      case 1:
+        printf("Digite o Preco: ");
+        scanf("%f", &vetFiltro[i].preco);
+      break;
+
+      case 2:
+        printf("Digite o Ano: ");
+        scanf("%d", &vetFiltro[i].ano);
+      break;
+
+      case 3:
+        printf("Digite o Nome: ");
+        scanf("%[^\n]", vetFiltro[i].nome_marca);
+      break;
+
+      case 4:
+        printf("Digite o Modelo: ");
+        scanf("%[^\n]", vetFiltro[i].modelo);
+      break;
+
+      case 5:
+        printf("Digite a Condicao: ");
+        scanf("%c", &vetFiltro[i].condicao);
+      break;
+
+      case6:
+      printf("Digite a Kilometragem: ");
+      scanf("%lf", vetFiltro[i].odometro);
+      break;
+
+      default:
+        printf("Deseja digitar novamente: S/N? ");
+        if(volta == 'N' || volta == 'n');
+        return 0;
+  }
+  } while (volta == 'S' || volta == 's');
+    formatar_estoque();
+    pesquisa_final();
+    formatar_venda();
+    pesquisa_final();
+}
+
+//FORMATANDO ARQUIVO ESTOQUE PARA STRUCT
+void formatar_estoque(){
+    int i =0;
+    FILE *pont;
+
+    pont = fopen("Veiculos_estoque.csv", "r");
+    if(pont == NULL){
+        printf("Erro ao abrir o arquivo");
+        fclose (pont);
+        return;
+    }
+    for(i=0; i<QNT; i++){
+        fscanf(pont, "%f %d %c %c %c %lf", vetVenda[i].preco, vetVenda[i].ano ,vetVenda[i].nome_marca, vetVenda[i].modelo, vetVenda[i].condicao, vetVenda[i].odometro);
+    }
+
+    fclose(pont);
+
+    return;
+}
+//FORMATANDO O ARQUVIO DE VENDA PARA STRUCT
+void formatar_venda(){//PEGAR ARQUIVO DE VENDA
+    int i =0;
+    FILE *pont;
+
+    pont = fopen("Veiculos_estoque.csv", "r");//COLOCAR ARQUIVO DE VENDA
+    if(pont == NULL){
+        printf("Erro ao abrir o arquivo");
+        fclose (pont);
+        return;
+    }
+    for(i=0; i<QNT; i++){//MUDANDO O VET PARA O VET DE VENDA
+        fscanf(pont, "%f %d %c %c %c %lf", vetVenda[i].preco, vetVenda[i].ano ,vetVenda[i].nome_marca, vetVenda[i].modelo, vetVenda[i].condicao, vetVenda[i].odometro);
+    }
+
+    fclose(pont);
+
+    return;
+}
+//PESQUISA DOS FILTROS DENTRO DAS STRUCTS
+
+void pesquisa_final(){
+  int i = 0, j=0, alt;
+  char op;
+
+  cond_pesquisa vetFiltro[QNT];
+  cond_pesquisa vetCompra[QNT];
+  cond_pesquisa vetVenda[QNT];
+
+  printf("Deseja alterar qual arquivo: (1)Compra\t (2)Venda\n");
+  scanf("%d", &alt);
+
+  if(alt==1){
+    for(i=0; i<QNT; i++){
+      printf("%f %d %c %c %c %lf", vetCompra[i]);
+      printf("Digite a linha a ser atualizada: ");
+      scanf("%d", &j);
+
+      if(j>=0 || j<QNT){
+
+        do{
+        printf("Digite as novas especificacoes: ");
+        scanf("%f %d %[^\n] %[^\n] %c %lf", &vetCompra[j].preco, &vetCompra[j].ano,
+          vetCompra[j].nome_marca, vetCompra[j].modelo,  &vetCompra[j].condicao, &vetCompra[j].odometro);
+
+        printf("Deseja fazer novamente? s/n: ");
+        scanf("%c", &op);
+        i++;
+
+        } while(op == 's' || op == 'S');
+
+        printf("\nDados gravados com sucesso");
+      }
+    }
+
+  }
+  if(alt==2){
+    for(i=0; i<QNT; i++){
+      printf("%f %d %c %c %c %lf", vetVenda[i]);
+      printf("Digite a linha a ser atualizada: ");
+      scanf("%d", &j);
+
+      if(j>=0 || j<QNT){
+
+        do{
+        printf("Digite as novas especificacoes: ");
+        scanf("%f %d %c %c %c %lf", &vetVenda[j].preco, &vetVenda[j].ano               , &vetVenda[j].nome_marca, &vetVenda[j].modelo,                             &vetVenda[j].condicao, &vetVenda[j].odometro);
+
+        printf("Deseja fazer novamente? s/n: ");
+        scanf("%c", &op);
+        i++;
+
+        } while(op == 's' || op == 'S');
+
+        printf("\nDados gravados com sucesso");
+
+      }
+    }
+  }
+}
+
+void ordena_menor(){//ORGANIZAR EM ORDEM CRESCENTE
+
+    Carro vetFinal[QNT];
+    Carro vetMenor[QNT];
+    Carro vetAuxi[QNT];
+
+    for (int i = 0; i < QNT-1; i++) {
+        printf("%f\n", vetMenor[i].preco_carro);
+        for (int j = i; j < QNT-1; j++){
+            if (vetFinal[j].preco_carro != vetFinal[i].preco_carro){
+                vetMenor[i].preco_carro = vetFinal[i].preco_carro;
+            }
+        }
+    }
+}
+void ordena_menor_alfabeto(){//ORGANIZAR EM ORDEM ALFABETICA
+  int i =0;
+  Carro vetMenor[QNT];
+  Carro vetAuxi[QNT];
+
+
+  for(i=0; i<QNT; i++){
+    if(vetMenor[i].nome_marca > vetMenor[i+1].nome_marca) {
+      strcpy(vetAuxi[i].nome_marca, vetMenor[i].nome_marca);
+      strcpy(vetMenor[i].nome_marca, vetMenor[i+1].nome_marca);
+      strcpy(vetMenor[i+1].nome_marca, vetAuxi[i].nome_marca);
+    }
+  }
+  for(i=0; i<QNT; i++){
+    if(vetMenor[i].nome_carro > vetMenor[i+1].nome_carro) {
+      strcpy(vetAuxi[i].nome_carro, vetMenor[i].nome_carro);
+      strcpy(vetMenor[i].nome_carro, vetMenor[i+1].nome_carro);
+      strcpy(vetMenor[i+1].nome_carro, vetAuxi[i].nome_carro);
+    }
+  }
+  for(i=0; i<QNT; i++){
+    printf("%c\n", vetMenor);
+  }
+}
+
+void ordena_maior(){//ORGANIZAR EM ORDEM DECRESCENTE
+
+    Carro vetFinal[QNT];
+    Carro vetMaior[QNT];
+
+    for (int i = 0; i < QNT-1; i++) {
+        printf("%f\n", vetMaior[i].preco_carro);
+        for (int j = i; j < QNT-1; j++){
+            if (vetFinal[j].preco_carro < vetFinal[i].preco_carro){
+                vetMaior[i].preco_carro = vetFinal[i].preco_carro;
+            }
+        }
+    }
+}
+
+void ordena_maior_alfabeto(){//ORGANIZANDO EM ORDEM ALFABETICA
+  int i = 0;
+  Carro vetMaior[QNT];
+  Carro vetAuxi[QNT];
+
+  for(i=0; i<QNT; i++){
+    if(vetMaior[i].nome_marca > vetMaior[i+1].nome_marca) {
+      strcpy(vetAuxi[i].nome_marca, vetMaior[i].nome_marca);
+      strcpy(vetMaior[i].nome_marca, vetMaior[i+1].nome_marca);
+      strcpy(vetMaior[i+1].nome_marca, vetAuxi[i].nome_marca);
+    }
+  }
+  for(i=0; i<QNT; i++){
+    if(vetMaior[i].nome_carro > vetMaior[i+1].nome_carro) {
+      strcpy(vetAuxi[i].nome_carro, vetMaior[i].nome_carro);
+      strcpy(vetMaior[i].nome_carro, vetMaior[i+1].nome_carro);
+      strcpy(vetMaior[i+1].nome_carro, vetAuxi[i].nome_carro);
+    }
+  }
+}
+
+//OP��AO � USAR AS STRUCTS GLOBAIS QUE FOI CRIADO PARA JA COMPRAR
+void opcao_de_ordenacao(){
+    int i =0, op, z=0;
+    vetMarca[QNT];
+    vetModelo[QNT];
+
+
+    Carro vetFinal[QNT];
+    Carro vetMenor[QNT];
+    Carro vetMaior[QNT];
+    Carro vetEscolha;
+
+    printf("Digite: o valor desejado: ");
+    scanf("%f", &vetEscolha.preco_carro);
+
+    printf("Digite: o modelo desejado: ");
+    scanf(" %[^\n]", vetModelo);
+    getchar();
+
+    printf("Digite: a marca desejada: ");
+    scanf(" %[^\n]", vetMarca);
+    getchar();
+
+    do {
+    printf("Digite a ordenacao desejada: (1)Menor Preco, (2)Maior Preco, (3)Ordem alfabetica, [0] Sair \n");
+    scanf("%d", &op);
+
+
+    //COMPARANDO A ESCOLHA COM O VETOR E PRINTANDO SE FOR IGUAL
+    switch(op){
+        case 1:
+            ordena_menor();
+            break;
+        case 2:
+            ordena_maior();
+            break;
+        case 3:
+            ordena_menor_alfabeto();
+            break;
+        default:
+             printf("Opcao invalida. Tente novamente.\n");
+        break;
+    }
+    } while (op != 0);
+    return;
 
 }
 
@@ -411,10 +696,10 @@ int main()
     setlocale(LC_ALL, "portuguese");
 
     int opcao;
-    
+
 
     do {
-        printf("Escolha uma opção abaixo:\n [1] Abrir veículos em ofertas\n [2] Realizar uma venda\n [3] Gravar taxa\n [4] Informações das taxas\n [5] Relatório de vendas\n [6] Realizar backup\n [0] Sair e salvar alterações: ");
+        printf("\nEscolha uma opcao abaixo:\n [1] Abrir veiculos em ofertas\n [2] Realizar uma venda\n [3] Gravar taxa\n [4] Informacoes das taxas\n [5] Relatorio de vendas\n [6] Realizar backup\n [7] Filtro de Busca\n [8] Ordenacao\n [0] Sair e salvar alteracoes: ");
         scanf("%d", &opcao);
         getchar();  // Limpa o caractere de nova linha no buffer de entrada
 
@@ -429,13 +714,13 @@ int main()
                 gravando_taxas();
                 break;
             case 4:
-                vetor_com_infos_de_taxa();
+                taxas_finais ();
                 break;
             case 5:
                 extratos_compras();
                 break;
             case 6:
-                                    // diretorio       //segurança
+                                    // diretorio       //seguran�a
                 if (CreateDirectory("backup_veiculos", NULL))
                 {
                     printf("Arquivo criado com sucesso\n");
@@ -443,15 +728,21 @@ int main()
 
                 backup_arquivos();
                 break;
+            case 7:
+                info_de_pesquisa();
+                break;
+            case 8:
+                opcao_de_ordenacao();
+                break;
             case 0:
-                printf("Saindo e salvando alterações...\n");
-                
+                printf("Saindo e salvando alteracoes...\n");
+
                 break;
             default:
-                printf("Opção inválida. Tente novamente.\n");
+                printf("Opcao invalida. Tente novamente.\n");
         }
 
     } while (opcao != 0);
 
-    return 0;
+return 0;
 }
